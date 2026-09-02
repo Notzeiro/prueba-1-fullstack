@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discogs Release Details - 249504</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --accent-color: #ff5500;
+            --border-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3 {
+            color: #fff;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 5px;
+        }
+
+        .header-title {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            margin-bottom: 10px;
+        }
+
+        .info-item strong {
+            color: var(--accent-color);
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        li:last-child {
+            border-bottom: none;
+        }
+
+        .track {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .gallery-item {
+            text-align: center;
+            background: #282828;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .gallery-item span {
+            display: block;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #ccc;
+        }
+
+        .error {
+            color: #ff6b6b;
+            font-weight: bold;
+            background: #3a1515;
+            padding: 15px;
+            border-radius: 6px;
+        }
+
+        .loading {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-title" id="main-header">Cargando Lanzamiento...</div>
+
+    <!-- Sección Datos Principales -->
+    <div class="card">
+        <h2>Detalles del Lanzamiento</h2>
+        <div class="info-grid" id="info-principal">
+            <div class="loading">Cargando información...</div>
+        </div>
+    </div>
+
+    <!-- Sección Tracklist -->
+    <div class="card">
+        <h2>Lista de Canciones (Tracklist)</h2>
+        <ul id="tracklist">
+            <li class="loading">Cargando canciones...</li>
+        </ul>
+    </div>
+
+    <!-- Sección Lugar de Grabación / Notas -->
+    <div class="card">
+        <h2>Grabación y Estudios</h2>
+        <ul id="grabacion-info">
+            <li class="loading">Cargando datos de estudios...</li>
+        </ul>
+    </div>
+
+    <!-- Sección Créditos -->
+    <div class="card">
+        <h2>Créditos e Integrantes</h2>
+        <ul id="creditos">
+            <li class="loading">Cargando créditos...</li>
+        </ul>
+    </div>
+
+    <!-- Sección Galería de Imágenes -->
+    <div class="card">
+        <h2>Imágenes (Carátula, Trasera, Lado A/B)</h2>
+        <div class="gallery" id="galeria">
+            <div class="loading">Cargando imágenes...</div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://api.discogs.com/releases/514858';
+
+        async function cargarLanzamiento() {
+            try {
+                const res = await fetch(API_URL, {
+                    headers: { 'User-Agent': 'MiConsultaDiscogs/1.0' }
+                });
+
+                if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+
+                const data = await res.json();
+
+                // 1. Título principal (Artista - Álbum/Sencillo)
+                const artistaNombre = data.artists ? data.artists.map(a => a.name).join(', ') : 'Desconocido';
+                document.getElementById('main-header').innerText = `${artistaNombre} — ${data.title}`;
+
+                // 2. Extraer Sello y Número de Catálogo
+                let selloNombre = 'N/A';
+                let numCatalogo = 'N/A';
+                if (data.labels && data.labels.length > 0) {
+                    selloNombre = data.labels[0].name;
+                    numCatalogo = data.labels[0].catno || 'N/A';
+                }
+
+                // 3. Renderizar Información Principal
+                document.getElementById('info-principal').innerHTML = `
+                    <div class="info-item"><strong>Release Code (ID):</strong> ${data.id}</div>
+                    <div class="info-item"><strong>Número de Catálogo:</strong> ${numCatalogo}</div>
+                    <div class="info-item"><strong>Artista:</strong> ${artistaNombre}</div>
+                    <div class="info-item"><strong>Álbum / Título:</strong> ${data.title}</div>
+                    <div class="info-item"><strong>Sello Discográfico:</strong> ${selloNombre}</div>
+                    <div class="info-item"><strong>País de Edición:</strong> ${data.country || 'N/A'}</div>
+                    <div class="info-item"><strong>Año:</strong> ${data.year || 'N/A'}</div>
+                    <div class="info-item"><strong>Género:</strong> ${data.genres ? data.genres.join(', ') : 'N/A'}</div>
+                    <div class="info-item"><strong>Estilo:</strong> ${data.styles ? data.styles.join(', ') : 'N/A'}</div>
+                `;
+
+                // 4. Renderizar Tracklist
+                const tracklistEl = document.getElementById('tracklist');
+                if (data.tracklist && data.tracklist.length > 0) {
+                    tracklistEl.innerHTML = data.tracklist.map(track => `
+                        <li class="track">
+                            <span><strong>${track.position || '-'}</strong>. ${track.title}</span>
+                            <span>${track.duration || ''}</span>
+                        </li>
+                    `).join('');
+                } else {
+                    tracklistEl.innerHTML = '<li>No hay información de canciones disponible.</li>';
+                }
+
+                // 5. Renderizar Dónde se Grabó / Compañías
+                const grabacionEl = document.getElementById('grabacion-info');
+                if (data.companies && data.companies.length > 0) {
+                    grabacionEl.innerHTML = data.companies.map(c => `
+                        <li><strong>${c.entity_type_name}:</strong> ${c.name}</li>
+                    `).join('');
+                } else {
+                    grabacionEl.innerHTML = '<li>No se especifica información de los estudios de grabación.</li>';
+                }
+
+                // 6. Renderizar Créditos
+                const creditosEl = document.getElementById('creditos');
+                if (data.extraartists && data.extraartists.length > 0) {
+                    creditosEl.innerHTML = data.extraartists.map(c => `
+                        <li><strong>${c.name}:</strong> ${c.role} ${c.tracks ? `<em>(Pistas: ${c.tracks})</em>` : ''}</li>
+                    `).join('');
+                } else {
+                    creditosEl.innerHTML = '<li>No hay detalles de créditos para este release.</li>';
+                }
+
+                // 7. Renderizar Galería e Clasificación de Imágenes (Frente, Atrás, Lado A/B)
+                const galeriaEl = document.getElementById('galeria');
+                if (data.images && data.images.length > 0) {
+                    galeriaEl.innerHTML = data.images.map((img, index) => {
+                        let etiquette = `Imagen ${index + 1}`;
+                        
+                        // Clasificación sugerida según el tipo o posición
+                        if (img.type === 'primary') etiquette = 'Carátula (Frente)';
+                        else if (index === 1) etiquette = 'Contraportada (Parte de atrás)';
+                        else if (index === 2) etiquette = 'Etiqueta / Lado A';
+                        else if (index === 3) etiquette = 'Etiqueta / Lado B';
+
+                        return `
+                            <div class="gallery-item">
+                                <img src="${img.resource_url}" alt="${etiquette}" loading="lazy" onerror="this.src='https://via.placeholder.com/180?text=Imagen+Protegida'">
+                                <span>${etiquette}</span>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    galeriaEl.innerHTML = '<p>No hay imágenes disponibles para este lanzamiento.</p>';
+                }
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('main-header').innerText = "Error al obtener datos";
+                document.getElementById('info-principal').innerHTML = `
+                    <div class="error">
+                        No se pudo consultar la API. Motivo: ${err.message}.<br>
+                        <em>Recuerda que Discogs puede restringir la visualización directa de imágenes por CORS/Hotlinking si no hay token de autenticación.</em>
+                    </div>
+                `;
+            }
+        }
+
+        cargarLanzamiento();
+    </script>
+</body>
+</html>
+
+
+TO DO
+AGREGAR EL ARTISSTA AL LADO DEL NOMBRE DEL DISCO

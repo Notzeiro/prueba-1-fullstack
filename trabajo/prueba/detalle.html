@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Producto - Vinyl Cool</title>
+
+    <style>
+        /*===================== PALETA DE COLORES VINYL COOL ===========================*/
+        :root {
+            --bg-page: #F3EFE0;
+            /* Crema Vintage general */
+            --card-bg: #FFFFFF;
+            /* Blanco Crema para contenedores */
+            --text-primary: #1A1A1A;
+            /* Negro Vinilo para textos generales */
+            --navy-blue: #0E3A53;
+            /* Azul Marino Clásico */
+            --terracotta: #E36236;
+            /* Naranja Terracota */
+            --mustard: #E8A246;
+            /* Amarillo Mostaza */
+            --border-color: #0E3A53;
+            /* Borde estructural */
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+            padding: 20px;
+            margin: 0;
+        }
+
+        /* MIGA DE PAN */
+        .breadcrumb {
+            font-size: 0.85rem;
+            color: var(--navy-blue);
+            margin-bottom: 20px;
+            font-weight: bold;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .breadcrumb a {
+            color: var(--terracotta);
+            text-decoration: none;
+        }
+
+        .texto1 p {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* CONTENEDOR PRINCIPAL DEL PRODUCTO */
+        .product-detail-container {
+            display: flex;
+            gap: 40px;
+            max-width: 1000px;
+            margin: 0 auto 40px auto;
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            box-shadow: 4px 4px 0px var(--border-color);
+        }
+
+        /* GALERÍA DE IMÁGENES */
+        .gallery-container {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .main-image {
+            width: 100%;
+            height: 380px;
+            border: 2px solid var(--border-color);
+            background-color: var(--bg-page);
+            margin-bottom: 12px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .main-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .thumbnails-container {
+            display: flex;
+            gap: 10px;
+            border: 2px solid var(--border-color);
+            padding: 10px;
+            background-color: var(--bg-page);
+            border-radius: 4px;
+        }
+
+        .thumb {
+            width: 60px;
+            height: 60px;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            object-fit: cover;
+            transition: all 0.2s ease;
+            opacity: 0.7;
+        }
+
+        .thumb.active,
+        .thumb:hover {
+            border-color: var(--terracotta);
+            opacity: 1;
+            transform: scale(1.05);
+        }
+
+        /* DETALLES Y COMPRA */
+        .product-info-detail {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--bg-page);
+            padding-bottom: 15px;
+        }
+
+        .product-title {
+            font-size: 1.8rem;
+            margin: 0;
+            color: var(--navy-blue);
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+
+        .product-price {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--terracotta);
+        }
+
+        /* TRACKLIST Y ENLACES DE YOUTUBE */
+        .tracklist-container {
+            margin-bottom: 25px;
+            padding-left: 5px;
+        }
+
+        .track-link {
+            font-size: 0.95rem;
+            color: var(--navy-blue);
+            text-decoration: none;
+            line-height: 1.4;
+            margin: 6px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        .track-link::before {
+            content: "▶";
+            font-size: 0.7rem;
+            color: var(--terracotta);
+            transition: color 0.2s ease;
+        }
+
+        .track-link:hover {
+            color: var(--terracotta);
+            text-decoration: underline;
+            transform: translateX(3px);
+        }
+
+        .track-link:hover::before {
+            color: var(--mustard);
+        }
+
+        .quantity-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: auto;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: var(--navy-blue);
+        }
+
+        .quantity-select {
+            padding: 8px 12px;
+            font-size: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-add-cart {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--terracotta);
+            color: #FFFFFF;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 1.05rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            box-shadow: 3px 3px 0px var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        .btn-add-cart:hover {
+            background-color: var(--mustard);
+            color: var(--text-primary);
+            transform: translate(-2px, -2px);
+            box-shadow: 5px 5px 0px var(--border-color);
+        }
+
+        /* ESTILOS PARA LAS GÓNDOLAS / CARRUSELES */
+        .shelf-section {
+            max-width: 1000px;
+            margin: 0 auto 40px auto;
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            box-shadow: 4px 4px 0px var(--border-color);
+        }
+
+        .shelf-title {
+            font-size: 1.3rem;
+            color: var(--navy-blue);
+            margin: 0 0 20px 0;
+            text-transform: uppercase;
+            font-weight: 800;
+            border-bottom: 2px solid var(--bg-page);
+            padding-bottom: 10px;
+        }
+
+        .shelf-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .album-card {
+            background-color: var(--bg-page);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .album-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 3px 3px 0px var(--border-color);
+            border-color: var(--terracotta);
+        }
+
+        .album-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 10px;
+        }
+
+        .album-card-title {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: var(--navy-blue);
+            margin: 0 0 4px 0;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .album-card-artist {
+            font-size: 0.85rem;
+            color: #555;
+            margin: 0 0 8px 0;
+        }
+
+        .album-card-price {
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--terracotta);
+            margin-top: auto;
+        }
+
+        @media (max-width: 768px) {
+            .product-detail-container {
+                flex-direction: column;
+                padding: 15px;
+            }
+
+            .main-image {
+                height: 300px;
+            }
+
+            .shelf-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+    <!-- Miga de pan -->
+
+    <!-- SECCIÓN DE DETALLE DE PRODUCTO -->
+    <div class="product-detail-container">
+
+        <!-- GALERÍA -->
+        <div class="gallery-container">
+            <div class="main-image" id="fotoGrande"></div>
+
+            <div class="thumbnails-container" id="thumbnails"></div>
+        </div>
+
+        <!-- INFORMACIÓN Y BOTÓN -->
+        <div class="product-info-detail">
+            <div class="product-header">
+                <h1 class="product-title" id="TituloDisco">Cargando...</h1>
+                <span class="product-price">$100</span>
+            </div>
+
+            <div class="tracklist-container" id="tracklist">
+            </div>
+
+            <div class="quantity-container">
+                <label for="quantity">Cantidad:</label>
+                <select id="quantity" class="quantity-select">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                </select>
+            </div>
+
+            <button class="btn-add-cart">Añadir al carrito</button>
+        </div>
+
+    </div>
+
+    <!-- GÓNDOLA 1: MÁS DISCOS DEL MISMO ARTISTA -->
+
+    <section class="shelf-section">
+        <h2 class="shelf-title">Detalles de la Edicion</h2>
+        <div  id="ReleaseCode"></div>
+        <div  id="NumeroCatalogo"></div>
+        <div  id="año"></div>
+        <div  id="pais"></div>
+        <div  id="sello"></div>
+        <div  id="genero"></div>
+        <div  id="estilo"></div>
+        <div  id="distribuidora"></div>
+        <div  id="recordCompany"></div>
+    </section>
+
+    <section class="shelf-section">
+        <h2 class="shelf-title">Creditos</h2>
+        <div class="texto1" id="creditos"></div>
+    </section>
+
+
+
+    <section class="shelf-section">
+        <h2 class="shelf-title">Más de Metallica</h2>
+        <div class="shelf-grid">
+
+            <a href="#" class="album-card">
+                <img src="img/rideTheLightning.jpg" alt="Ride the Lightning">
+                <h3 class="album-card-title">Ride the Lightning</h3>
+                <p class="album-card-artist">Metallica</p>
+                <span class="album-card-price">$110</span>
+            </a>
+
+            <a href="#" class="album-card">
+                <img src="img/masterOfPuppets.jpg" alt="Master of Puppets">
+                <h3 class="album-card-title">Master of Puppets</h3>
+                <p class="album-card-artist">Metallica</p>
+                <span class="album-card-price">$120</span>
+            </a>
+
+            <a href="#" class="album-card">
+                <img src="img/andJusticeForAll.jpg" alt="...And Justice for All">
+                <h3 class="album-card-title">...And Justice for All</h3>
+                <p class="album-card-artist">Metallica</p>
+                <span class="album-card-price">$115</span>
+            </a>
+
+            <a href="#" class="album-card">
+                <img src="img/blackAlbum.jpg" alt="Metallica (The Black Album)">
+                <h3 class="album-card-title">The Black Album</h3>
+                <p class="album-card-artist">Metallica</p>
+                <span class="album-card-price">$125</span>
+            </a>
+
+        </div>
+    </section>
+
+    <!-- GÓNDOLA 2: MÁS DISCOS DEL MISMO GÉNERO (THRASH METAL) -->
+    <section class="shelf-section">
+        <h2 class="shelf-title">Más de Thrash Metal</h2>
+        <div class="shelf-grid">
+
+            <a href="#" class="album-card">
+                <img src="img/rustInPeace.jpg" alt="Rust in Peace">
+                <h3 class="album-card-title">Rust in Peace</h3>
+                <p class="album-card-artist">Megadeth</p>
+                <span class="album-card-price">$105</span>
+            </a>
+
+            <a href="#" class="album-card">
+                <img src="img/reignInBlood.jpg" alt="Reign in Blood">
+                <h3 class="album-card-title">Reign in Blood</h3>
+                <p class="album-card-artist">Slayer</p>
+                <span class="album-card-price">$98</span>
+            </a>
+
+            <a href="#" class="album-card">
+                <img src="img/amongTheLiving.jpg" alt="Among the Living">
+                <h3 class="album-card-title">Among the Living</h3>
+                <p class="album-card-artist">Anthrax</p>
+                <span class="album-card-price">$95</span>
+            </a>
+
+            <a href="#" class="album-card">
+                <img src="img/beneathTheRemains.jpg" alt="Beneath the Remains">
+                <h3 class="album-card-title">Beneath the Remains</h3>
+                <p class="album-card-artist">Sepultura</p>
+                <span class="album-card-price">$100</span>
+            </a>
+
+        </div>
+    </section>
+
+    <!-- SCRIPT PARA CAMBIAR LA IMAGEN -->
+    <script>
+        const API_URL = 'https://api.discogs.com/releases/514858';
+
+        function changeImage(element) {
+            document.getElementById('current-img').src = element.src;
+
+            const thumbs = document.querySelectorAll('.thumb');
+            thumbs.forEach(thumb => thumb.classList.remove('active'));
+
+            element.classList.add('active');
+        }
+        async function fetchData() {
+            try {
+                const res = await fetch(API_URL);
+                const data = await res.json();
+
+                //Titulo del disco
+                const TituloDisco = data.title  || 'Título no disponible';
+                const Artista = data.artists[0]?.name || 'Artista no disponible';
+                const TituloCompleto = `${Artista}  - ${TituloDisco}`;
+                document.getElementById('TituloDisco').innerText = TituloCompleto;
+                console.log('Título del disco:', TituloDisco);
+
+                // Tracklist
+                const Tracklist = data.tracklist || [];
+                for (const cancion of Tracklist) {
+                    const track = cancion.position + " - " + cancion.title + "              " + cancion.duration;
+                    document.getElementById('tracklist').innerHTML += `<a class="track-link">${track}</a>`;
+
+                }
+
+                // Galería de imágenes
+                const Imagenes = data.images || [];
+                for (const img of Imagenes) {
+                    const rutaFoto = img.uri || "img/DiscoNoEncontrado.jpg";
+                    document.getElementById('thumbnails').innerHTML += `<img src="${rutaFoto}" alt="Vista 3" class="thumb" onclick="changeImage(this)">`;
+
+                }
+
+                //fotoGrande
+                const primeraImagen = data.images[0]?.uri || "img/DiscoNoEncontrado.jpg";
+                document.getElementById('fotoGrande').innerHTML = `<img id="current-img" src="${primeraImagen}" alt="Producto Principal">`;
+
+                //DetalleEdicion
+                // ReleaseCode
+                const ReleaseCode = data.id || 'N/A';
+                document.getElementById('ReleaseCode').innerHTML = `<p><strong>Release Code:</strong> ${ReleaseCode}</p>`;
+                // NumeroCatalogo
+                const NumeroCatalogo = data.labels[0]?.catno || 'N/A';
+                document.getElementById('NumeroCatalogo').innerHTML = `<p><strong>Número de Catálogo:</strong> ${NumeroCatalogo}</p>`;
+                // Año
+                const Año = data.year || 'N/A';
+                document.getElementById('año').innerHTML = `<p><strong>Año:</strong> ${Año}</p>`;
+                // País
+                const Pais = data.country || 'N/A';
+                document.getElementById('pais').innerHTML = `<p><strong>País:</strong> ${Pais}</p>`;
+                // Sello
+                const Sello = data.labels[0]?.name || 'N/A';
+                document.getElementById('sello').innerHTML = `<p><strong>Sello:</strong> ${Sello}</p>`;
+                // Género
+                const Genero = data.genres.join(', ') || 'N/A';
+                document.getElementById('genero').innerHTML = `<p><strong>Género:</strong> ${Genero}</p>`;
+                // Estilo
+                const Estilo = data.styles.join(', ') || 'N/A';
+                document.getElementById('estilo').innerHTML = `<p><strong>Estilo:</strong> ${Estilo}</p>`;
+                // Distribuidora
+                const Distribuidora = data.labels[0]?.name || 'N/A';
+                document.getElementById('distribuidora').innerHTML = `<p><strong>Distribuidora:</strong> ${Distribuidora}</p>`;
+                // Record Company
+                const RecordCompany = data.labels[0]?.name || 'N/A';
+                document.getElementById('recordCompany').innerHTML = `<p><strong>Record Company:</strong> ${RecordCompany}</p>`;
+
+                const creditos = data.extraartists || [];
+                for (const artista of creditos) {
+                    const nombreArtista = artista.name+ " - " + artista.role;
+                    document.getElementById('creditos').innerHTML += `<p>${nombreArtista}</p>`;
+                }
+
+
+            } catch (error) {
+                console.error('Error al obtener los datos de la API:', error);
+            }
+
+
+        }
+        fetchData();
+    </script>
+
+</body>
+
+</html>
