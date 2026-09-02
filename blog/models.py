@@ -1,8 +1,11 @@
+from django.conf import settings
 from django.db import models
 
 class Blog(models.Model):
     titulo = models.CharField(max_length=250)
-    descripcion = models.CharField(max_length=250)
+    descripcion = models.CharField(max_length=250, help_text="Extracto corto para el listado")
+    contenido = models.TextField(help_text="Contenido completo de la publicación")
+    autor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='posts')
     imagen_portada = models.ImageField(upload_to='img/')
     activo = models.BooleanField(default=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)

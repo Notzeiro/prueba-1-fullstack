@@ -26,7 +26,7 @@ class Producto(models.Model):
     nombre = models.CharField(max_length=250)
     artista = models.ForeignKey(Artista, on_delete=models.CASCADE, related_name='productos')
     categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, related_name='productos')
-    descripcion = models.CharField(max_length=250)
+    descripcion = models.TextField(blank=True)
     precio = models.DecimalField(max_digits=8, decimal_places=2)
     stock = models.PositiveIntegerField()
     imagen = models.ImageField(upload_to='img/')
