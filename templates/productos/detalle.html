@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ producto.nombre }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/productos.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<nav class="breadcrumb">
+    <a href="{% url 'core:home' %}">Home</a> &gt;
+    <a href="{% url 'productos:index' %}">Productos</a> &gt;
+    {{ producto.nombre }}
+</nav>
+
+<div class="product-detail-container">
+
+    <div class="gallery-container">
+        <div class="main-image">
+            {% if producto.imagen %}
+                <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
+            {% else %}
+                <img src="{% static 'img/DiscoNoEncontrado.jpg' %}" alt="{{ producto.nombre }}">
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="product-info-detail">
+        <div class="product-header">
+            <h1 class="product-title">{{ producto.nombre }}</h1>
+            <span class="product-price">${{ producto.precio }}</span>
+        </div>
+
+        <p>{{ producto.descripcion }}</p>
+        <p><strong>Artista:</strong> {{ producto.artista.nombre_artista }}</p>
+        <p><strong>Categoría:</strong> {{ producto.categoria.nombre|default:"Sin categoría" }}</p>
+        <p><strong>Stock disponible:</strong> {{ producto.stock }}</p>
+
+        <div class="quantity-container">
+            <label for="quantity">Cantidad:</label>
+            <select id="quantity" class="quantity-select">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+            </select>
+        </div>
+
+        <button class="btn-add-cart"
+                data-producto-id="{{ producto.id }}"
+                data-producto-nombre="{{ producto.nombre }}"
+                data-producto-precio="{{ producto.precio }}">
+            Añadir al carrito
+        </button>
+    </div>
+
+</div>
+
+{% if relacionados %}
+<section class="shelf-section">
+    <h2 class="shelf-title">Más de {{ producto.artista.nombre_artista }}</h2>
+    <div class="shelf-grid">
+        {% for otro in relacionados %}
+        <a href="{% url 'productos:detalle' otro.id %}" class="album-card">
+            {% if otro.imagen %}
+                <img src="{{ otro.imagen.url }}" alt="{{ otro.nombre }}">
+            {% else %}
+                <img src="{% static 'img/DiscoNoEncontrado.jpg' %}" alt="{{ otro.nombre }}">
+            {% endif %}
+            <h3 class="album-card-title">{{ otro.nombre }}</h3>
+            <p class="album-card-artist">{{ otro.artista.nombre_artista }}</p>
+            <span class="album-card-price">${{ otro.precio }}</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}

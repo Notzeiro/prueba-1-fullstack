@@ -1,0 +1,194 @@
+/* ===================== PALETA "VINYL COOL" ===================== */
+:root {
+    --bg-page: #F3EFE0;          /* Crema vintage */
+    --card-bg: #FFFFFF;          /* Blanco para cards */
+    --border-color: #0E3A53;     /* Azul marino, borde estructural */
+    --navy-blue: #0E3A53;
+    --terracotta: #E36236;       /* Precio / acento */
+    --mustard: #E8A246;          /* Hover */
+    --text-primary: #1A1A1A;
+}
+
+/* ===================== HERO (portada de productos) ===================== */
+.hero-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--card-bg);
+    border: 2px solid var(--border-color);
+    padding: 40px;
+    gap: 30px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    box-shadow: 4px 4px 0px var(--border-color);
+}
+
+.hero-content { flex: 1; max-width: 500px; }
+
+.hero-content h1 {
+    font-size: 2.2rem;
+    color: var(--navy-blue);
+    margin: 0 0 15px 0;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.hero-content p { font-size: .95rem; line-height: 1.5; margin-bottom: 25px; }
+
+.hero-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background-color: var(--terracotta);
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 4px;
+    border: 2px solid var(--text-primary);
+    box-shadow: 3px 3px 0px var(--text-primary);
+    transition: all .2s ease;
+}
+
+.hero-button:hover {
+    background-color: var(--mustard);
+    color: var(--text-primary);
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0px var(--text-primary);
+}
+
+.hero-image {
+    flex: 1;
+    max-width: 50%;
+    aspect-ratio: 16/9;
+    border: 2px solid var(--text-primary);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.hero-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ===================== GRILLA DE PRODUCTOS ===================== */
+.products-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.product-card {
+    background-color: var(--card-bg);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--mustard);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 6px rgba(0,0,0,.05);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+.product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 12px rgba(0,0,0,.1); }
+
+.product-image { width: 100%; aspect-ratio: 16/10; background: var(--navy-blue); border-radius: 4px; overflow: hidden; }
+.product-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.product-name {
+    display: block;
+    margin: 12px 0 8px;
+    text-align: center;
+    color: var(--navy-blue);
+    text-decoration: none;
+    font-weight: 700;
+}
+.product-name:hover { color: var(--terracotta); text-decoration: underline; }
+
+.product-info { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+.product-price { color: #555; font-size: .85rem; text-transform: uppercase; }
+.product-amount { color: var(--terracotta); font-size: 1.1rem; font-weight: bold; }
+
+/* ===================== DETALLE DE PRODUCTO ===================== */
+.breadcrumb { font-size: .85rem; color: var(--navy-blue); margin-bottom: 20px; font-weight: bold; }
+.breadcrumb a { color: var(--terracotta); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+
+.product-detail-container {
+    display: flex;
+    gap: 40px;
+    background-color: var(--card-bg);
+    padding: 30px;
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+    box-shadow: 4px 4px 0px var(--border-color);
+    margin-bottom: 40px;
+}
+
+.gallery-container { flex: 1; }
+.main-image { width: 100%; aspect-ratio: 1/1; border-radius: 4px; overflow: hidden; background: var(--navy-blue); }
+.main-image img { width: 100%; height: 100%; object-fit: cover; }
+
+.product-info-detail { flex: 1; display: flex; flex-direction: column; }
+.product-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 20px; }
+.product-title { font-size: 1.6rem; color: var(--navy-blue); margin: 0; text-transform: uppercase; }
+.product-header .product-price { font-size: 1.4rem; color: var(--terracotta); font-weight: bold; }
+
+.quantity-container { margin: 20px 0; display: flex; align-items: center; gap: 10px; }
+.quantity-select { padding: 6px 10px; border: 1px solid var(--border-color); border-radius: 4px; }
+
+.btn-add-cart {
+    padding: 14px 20px;
+    background-color: var(--terracotta);
+    color: #fff;
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    cursor: pointer;
+    box-shadow: 3px 3px 0px var(--border-color);
+    transition: all .2s ease;
+}
+.btn-add-cart:hover {
+    background-color: var(--mustard);
+    color: var(--text-primary);
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0px var(--border-color);
+}
+
+/* Góndolas de productos relacionados */
+.shelf-section {
+    background-color: var(--card-bg);
+    padding: 25px;
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+    box-shadow: 4px 4px 0px var(--border-color);
+    margin-bottom: 30px;
+}
+.shelf-title {
+    font-size: 1.3rem;
+    color: var(--navy-blue);
+    margin: 0 0 20px;
+    text-transform: uppercase;
+    font-weight: 800;
+    border-bottom: 2px solid var(--bg-page);
+    padding-bottom: 10px;
+}
+.shelf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
+.album-card {
+    background-color: var(--bg-page);
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    padding: 12px;
+    text-decoration: none;
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+.album-card:hover { transform: translateY(-4px); box-shadow: 3px 3px 0px var(--border-color); border-color: var(--terracotta); }
+.album-card img { width: 100%; height: 140px; object-fit: cover; border-radius: 4px; margin-bottom: 10px; }
+.album-card-title { font-size: .95rem; font-weight: bold; color: var(--navy-blue); margin: 0 0 4px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.album-card-artist { font-size: .85rem; color: #555; margin: 0 0 8px; }
+.album-card-price { font-size: 1rem; font-weight: bold; color: var(--terracotta); margin-top: auto; }
+
+@media (max-width: 768px) {
+    .hero-banner, .product-detail-container { flex-direction: column; padding: 20px; }
+    .hero-content, .hero-image { max-width: 100%; width: 100%; }
+}
