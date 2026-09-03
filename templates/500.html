@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<!--
+    Esta plantilla NO extiende base.html a propósito.
+
+    Cuando ocurre un error 500, algo ya salió mal en el servidor —
+    puede que hasta el sistema de plantillas o el procesamiento de la
+    sesión estén fallando. Django renderiza esta página sin pasarle el
+    contexto normal (no hay "user", ni "messages", ni siquiera {% url %}
+    garantizado), así que esta página se mantiene simple y autocontenida
+    para que siempre pueda mostrarse, pase lo que pase.
+-->
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Error del servidor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #F3EFE0;
+            color: #1A1A1A;
+            text-align: center;
+            padding: 80px 20px;
+        }
+        h1 { font-size: 3rem; margin-bottom: 10px; }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #E36236;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>500</h1>
+    <p>Ocurrió un error inesperado en el servidor. Ya estamos al tanto.</p>
+    <a href="/">Volver al inicio</a>
+</body>
+</html>

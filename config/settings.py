@@ -12,12 +12,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-n453^$g+%hd3zwj3==ka2vy#6_^b_r+rw9#!x=k#wr#&dcrn0)'
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-n453^$g+%hd3zwj3==ka2vy#6_^b_r+rw9#!x=k#wr#&dcrn0)")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = []
+# Necesario para que Django acepte peticiones cuando DEBUG=False (en ese
+# modo, por seguridad, Django rechaza cualquier host que no este en esta
+# lista explicitamente). En desarrollo local alcanza con estos dos.
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
 
 # Application definition
@@ -131,6 +134,11 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+# Carpeta donde "manage.py collectstatic" junta todos los archivos
+# estaticos en un solo lugar, para que el servidor web de produccion
+# (no Django) los sirva directamente. En desarrollo (runserver) no se
+# usa: Django sirve los archivos directo desde STATICFILES_DIRS.
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"

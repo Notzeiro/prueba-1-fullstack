@@ -18,7 +18,7 @@
     <div class="contenidoBlog">
         <h1 class="tituloBlog">{{ post.titulo }}</h1>
         <p class="descricionBlog">{{ post.descripcion }}</p>
-        <a href="#" class="botonBlog">Ver Caso</a>
+        <a href="{% url 'blog:detalle' post.id %}" class="botonBlog">Ver Caso</a>
     </div>
 
     {% if post.imagen_portada %}

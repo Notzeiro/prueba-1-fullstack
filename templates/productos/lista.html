@@ -11,6 +11,10 @@
 
 <h1>Productos</h1>
 
+{% if busqueda %}
+    <p class="text-secondary">Resultados para: "{{ busqueda }}"</p>
+{% endif %}
+
 <div class="products-container">
     {% for producto in productos %}
     <div class="product-card">
@@ -34,7 +38,11 @@
         </button>
     </div>
     {% empty %}
-    <p>Todavía no hay productos cargados.</p>
+        {% if busqueda %}
+            <p>No se encontraron productos para "{{ busqueda }}".</p>
+        {% else %}
+            <p>Todavía no hay productos cargados.</p>
+        {% endif %}
     {% endfor %}
 </div>
 
