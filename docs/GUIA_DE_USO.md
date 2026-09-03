@@ -59,7 +59,7 @@ Muestra la ficha completa de un disco: imagen, descripción, artista, categoría
 Página institucional con una breve descripción del proyecto y el equipo que lo desarrolló.
 
 ### Blog (`/blog/`)
-Lista las publicaciones activas del blog (noticias, novedades). Cada una muestra título, un extracto corto y la imagen de portada.
+Lista las publicaciones activas del blog (noticias, novedades). Cada una muestra título, un extracto corto y la imagen de portada. El botón "Ver Caso" lleva al detalle completo de esa publicación (`/blog/<id>/`), con el contenido completo, el autor, la fecha y una galería de imágenes si el post tiene.
 
 ### Contáctanos (`/contacto/`)
 Formulario para enviar un mensaje (nombre, correo, asunto, mensaje). Al enviarlo, queda guardado en la base de datos para que el administrador lo revise después desde el panel.
@@ -84,7 +84,7 @@ Muestra todos los productos agregados, con su cantidad, subtotal y el total gene
 - Si borrás los datos de navegación del navegador, el carrito se pierde.
 
 ### Buscador (en el menú superior)
-Permite escribir un término y buscar entre los productos. *(Pendiente de conectar a un filtro real en la vista — por ahora el campo existe visualmente pero no filtra resultados todavía).*
+Permite escribir un término y buscar entre los productos, tanto por nombre del disco como por nombre del artista. Al buscar, la página de Productos muestra el término buscado y, si no hay coincidencias, un mensaje de "no se encontraron productos".
 
 ## 3. El panel de administración (`/admin/`)
 
@@ -104,6 +104,27 @@ Al momento de escribir este documento, la base de datos tiene cargados como ejem
 
 - **Productos**: *Walk Among Us* (Misfits) y *Californication* (Red Hot Chili Peppers)
 - **Categorías**: Punk Rock, Funk Rock
+- **Un post de blog**: "Bienvenidos a Vinyl Hub"
 - **Un usuario administrador** (creado con `createsuperuser` — pedile la contraseña a quien lo creó, o creá el tuyo propio en tu base de datos local)
 
 Estos datos existen solo en la base de datos de quien los cargó — cada integrante del equipo va a tener que cargar sus propios datos de prueba en su base local (o usar el admin para hacerlo).
+
+## 5. Verificar que todo funciona (tests automatizados)
+
+El proyecto tiene 21 tests automatizados que revisan los flujos principales (registro, login, contacto, productos, blog). Para correrlos:
+
+```bash
+python manage.py test
+```
+
+Si alguno falla después de que alguien haga un cambio, es una señal clara de que ese cambio rompió algo que antes funcionaba — conviene correrlos antes de hacer push de un cambio grande.
+
+**Nota:** la primera vez, si da un error de permisos de PostgreSQL, hay que darle permiso a `tienda_user` para crear una base de datos de prueba temporal:
+```sql
+ALTER USER tienda_user CREATEDB;
+```
+(esto se ejecuta una sola vez, conectado como superusuario de Postgres).
+
+## 6. Páginas de error personalizadas
+
+El sitio tiene páginas propias para los errores 403 (sin permiso), 404 (no encontrado) y 500 (error del servidor). Solo se activan cuando el proyecto corre con `DJANGO_DEBUG=False` en el `.env` — en desarrollo normal (`DEBUG=True`) Django muestra su página de error detallada en su lugar, a propósito, para facilitar encontrar el problema.

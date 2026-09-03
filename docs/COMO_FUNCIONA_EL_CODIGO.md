@@ -324,10 +324,59 @@ python manage.py runserver        # levanta el servidor de desarrollo
 
 Para más detalle de instalación paso a paso, ver `GUIA_DE_USO.md`.
 
-## 12. Cosas que todavía quedan pendientes (para que quede registrado)
+## 12. El buscador (`productos/views.py`)
 
-- Que el buscador del navbar filtre realmente los productos.
-- Página de detalle de un post del blog (solo existe el listado).
-- Proteger rutas de administrador para que un cliente normal no pueda entrar escribiendo la URL a mano.
-- Páginas de error personalizadas (403, 404, 500).
-- Tests automatizados.
+```python
+busqueda = request.GET.get("q", "").strip()
+if busqueda:
+    productos = productos.filter(
+        Q(nombre__icontains=busqueda) | Q(artista__nombre_artista__icontains=busqueda)
+    )
+```
+
+`request.GET.get("q", "")` lee el parámetro `q` de la URL (el que manda el formulario del navbar por método GET, ej. `/productos/?q=misfits`). `Q(...) | Q(...)` combina dos condiciones con "o": el término buscado puede coincidir con el nombre del producto **o** con el nombre del artista. `icontains` es "contiene, sin distinguir mayúsculas/minúsculas".
+
+## 13. Páginas de error personalizadas (`403.html`, `404.html`, `500.html`)
+
+Django busca automáticamente plantillas con estos nombres exactos en la raíz de `templates/` (no dentro de una subcarpeta de app) y las usa **solo cuando `DEBUG=False`**. Con `DEBUG=True` (modo desarrollo), Django muestra su página de error detallada con el traceback en vez de estas, a propósito, para facilitar debuggear.
+
+Un detalle importante: `500.html` **no** hereda de `base.html` como las otras. Si el servidor ya está fallando con un error interno, no conviene depender de todo el sistema de plantillas (que podría ser parte del problema) — por eso `500.html` es HTML plano y autocontenido.
+
+Para probar estas páginas localmente hace falta forzar `DEBUG=False` temporalmente (por ejemplo, poniendo `DJANGO_DEBUG=False` en el `.env` un momento) y correr `python manage.py collectstatic` al menos una vez, porque con `DEBUG=False` Django deja de servir archivos estáticos automáticamente con `runserver`.
+
+## 14. Tests automatizados (`tests.py` de cada app)
+
+Los tests usan `django.test.TestCase`, que crea una **base de datos de prueba separada** (una copia vacía de la estructura, sin los datos reales) antes de correr, y la borra al terminar — por eso no hay riesgo de que los tests toquen los datos verdaderos de `vinyl_hub`.
+
+Patrón típico de un test:
+
+```python
+def test_login_correcto(self):
+    respuesta = self.client.post(reverse("usuarios:login"), {
+        "email": "cliente@gmail.com",
+        "password": "ClaveCorrecta123",
+    })
+    self.assertEqual(respuesta.status_code, 302)
+```
+
+- `self.client` simula un navegador real, sin necesidad de levantar el servidor.
+- `reverse("usuarios:login")` obtiene la URL real a partir del nombre de la ruta (lo mismo que `{% url %}` en los templates, pero para usar en Python).
+- `self.assertEqual(...)`, `self.assertContains(...)`, `self.assertTrue(...)` son las "afirmaciones": si lo que se espera no se cumple, el test falla y muestra qué esperaba versus qué recibió.
+
+`setUp(self)` es un método especial que corre automáticamente **antes de cada test** de una clase, para dejar preparados los datos que esos tests van a necesitar (evita repetir el mismo código de armado en cada test).
+
+Para correr todos los tests del proyecto:
+
+```bash
+python manage.py test
+```
+
+**Nota:** correr tests requiere que el usuario de PostgreSQL (`tienda_user`) tenga permiso para crear bases de datos (`CREATEDB`), porque Django necesita crear la base de prueba temporal. Si da un error de permisos al correr `manage.py test`, hay que conectarse como superusuario de Postgres y ejecutar `ALTER USER tienda_user CREATEDB;`.
+
+## 15. Cosas que todavía quedan pendientes (para que quede registrado)
+
+- Vista propia de administración (más allá del admin de Django) — puntos 14-18 del checklist, opcional según lo conversado con el profesor.
+- Más datos de prueba (el checklist pide mínimo 8-12 productos, ahora hay 2).
+- Recuperar contraseña.
+- Filtro por categoría y orden por precio en el listado de productos (mejoras opcionales del checklist).
+- Paginación del listado de productos y del blog.
