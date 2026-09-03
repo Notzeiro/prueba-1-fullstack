@@ -1,0 +1,51 @@
+h1{
+    text-align: center;
+    margin-top: 50px;
+}
+
+.contenedorBlogs{
+    width: 75%;
+    margin: 5% auto;
+    border: 2px solid rgb(0, 0, 0);
+    padding: 20px;
+
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.imagenBlog{
+    width: 50%;
+    height: 200px;
+    object-fit: cover;
+    order: 2;
+}
+
+.contenidoBlog {
+    width: 50%;
+}
+
+.tituloBlog{
+    text-align:start;
+    margin-left: 5%;
+}
+
+.descricionBlog{
+    text-align:start;
+    margin-left: 5%;
+    margin-top: 1%;
+}
+
+button{
+    background-color: blue;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 5%;
+}
+
+button:hover{
+    background-color: darkblue;
+}
