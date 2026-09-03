@@ -1,10 +1,45 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Inicio{% endblock %}
+{% block title %}Vinyl Hub - Tienda Online{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/productos.css' %}">
+{% endblock %}
 
 {% block content %}
 
-<h1>Home funcionando</h1>
-<p>Los templates de Django están funcionando correctamente.</p>
+<section class="hero-banner">
+    <div class="hero-content">
+        <h1>Tienda Online</h1>
+        <p>Vinilos originales, ediciones limitadas y clásicos del rock, metal y más — directo a tu colección.</p>
+        <a href="{% url 'productos:index' %}" class="hero-button">Ver productos</a>
+    </div>
+    <div class="hero-image">
+        <img src="{% static 'img/logoHero.jpg' %}" alt="Vinyl Hub">
+    </div>
+</section>
+
+<h2>Destacados</h2>
+<div class="products-container">
+    {% for producto in productos %}
+    <div class="product-card">
+        <div class="product-image">
+            {% if producto.imagen %}
+                <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
+            {% else %}
+                <img src="{% static 'img/DiscoNoEncontrado.jpg' %}" alt="{{ producto.nombre }}">
+            {% endif %}
+        </div>
+        <a href="{% url 'productos:detalle' producto.id %}" class="product-name">{{ producto.nombre }}</a>
+        <div class="product-info">
+            <span class="product-price">{{ producto.artista.nombre_artista }}</span>
+            <span class="product-amount">${{ producto.precio }}</span>
+        </div>
+    </div>
+    {% empty %}
+    <p>Todavía no hay productos cargados en la tienda.</p>
+    {% endfor %}
+</div>
 
 {% endblock %}
