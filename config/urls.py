@@ -28,9 +28,10 @@ urlpatterns = [
     path("contacto/", include("contacto.urls")),
 ]
 
-# En desarrollo (DEBUG=True), Django no sirve archivos subidos por los
-# usuarios (imagenes de productos, blog, etc.) a menos que se le indique
-# explicitamente con esta linea. En produccion esto lo hace el servidor
-# web (nginx, etc.), no Django, por eso va condicionado a settings.DEBUG.
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Django no sirve archivos subidos por los usuarios (imagenes de
+# productos, blog, etc.) a menos que se le indique explicitamente con
+# esta linea. Lo normal es que en produccion esto lo haga un servidor
+# web aparte (nginx, etc.), pero este despliegue es un contenedor unico
+# sin sidecar de estaticos, asi que se sirve siempre, tambien con
+# DEBUG=False. Para el volumen de trafico de este proyecto es aceptable.
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

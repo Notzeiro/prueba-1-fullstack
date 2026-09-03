@@ -373,7 +373,17 @@ python manage.py test
 
 **Nota:** correr tests requiere que el usuario de PostgreSQL (`tienda_user`) tenga permiso para crear bases de datos (`CREATEDB`), porque Django necesita crear la base de prueba temporal. Si da un error de permisos al correr `manage.py test`, hay que conectarse como superusuario de Postgres y ejecutar `ALTER USER tienda_user CREATEDB;`.
 
-## 15. Cosas que todavía quedan pendientes (para que quede registrado)
+## 15. Despliegue (`Dockerfile`, `docker-compose.yml`)
+
+Además de correr con `manage.py runserver` en desarrollo, el proyecto puede empaquetarse como contenedor Docker para correr en un servidor real:
+
+- **`Dockerfile`**: define cómo construir la imagen (instalar dependencias del sistema y de `requirements.txt`, copiar el código, correr como usuario sin privilegios) y qué comando ejecutar al arrancar (aplicar migraciones, juntar estáticos, y levantar `gunicorn` en vez de `runserver`).
+- **`docker-compose.yml`**: levanta dos contenedores — la app (`web`) y una base PostgreSQL propia (`db`) — conectados entre sí por una red Docker privada, para no depender de un Postgres instalado a mano en el servidor.
+- Los cambios en `config/settings.py` (`ALLOWED_HOSTS`/`CSRF_TRUSTED_ORIGINS` desde variables de entorno, `SECURE_PROXY_SSL_HEADER`, `whitenoise` para estáticos) existen para que el mismo código funcione tanto en desarrollo local como detrás de un proxy HTTPS en producción, sin tener dos versiones distintas del proyecto.
+
+El detalle completo de dónde y cómo está desplegado en producción (servidor, dominio, red, credenciales, cómo redesplegar) está en **`docs/DESPLIEGUE.md`**, para no mezclar "cómo funciona el código" con "dónde vive en producción".
+
+## 16. Cosas que todavía quedan pendientes (para que quede registrado)
 
 - Vista propia de administración (más allá del admin de Django) — puntos 14-18 del checklist, opcional según lo conversado con el profesor.
 - Más datos de prueba (el checklist pide mínimo 8-12 productos, ahora hay 2).

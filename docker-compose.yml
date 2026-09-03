@@ -1,0 +1,66 @@
+services:
+  web:
+    build: .
+    container_name: vynilstore-web
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - vynilstore_media:/app/media
+    ports:
+      # Puerto local para pruebas directas desde el propio servidor
+      # (curl/health checks); la entrada publica real la maneja el
+      # Cloudflare Tunnel apuntando a http://vynilstore-web:8000 dentro
+      # de la red "frontend-proxy".
+      - "127.0.0.1:8089:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - frontend-proxy
+      - db-net-vynilstore
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+
+  db:
+    image: postgres:16-alpine
+    container_name: vynilstore-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-vinyl_hub}
+      POSTGRES_USER: ${DB_USER:-tienda_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - vynilstore_postgres_data:/var/lib/postgresql/data
+    networks:
+      - db-net-vynilstore
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-tienda_user} -d ${DB_NAME:-vinyl_hub}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+
+volumes:
+  vynilstore_postgres_data:
+    name: vynilstore_postgres_data
+  vynilstore_media:
+    name: vynilstore_media
+
+networks:
+  frontend-proxy:
+    external: true
+  db-net-vynilstore:
+    name: db-net-vynilstore
+    driver: bridge

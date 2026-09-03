@@ -19,8 +19,34 @@ DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
 
 # Necesario para que Django acepte peticiones cuando DEBUG=False (en ese
 # modo, por seguridad, Django rechaza cualquier host que no este en esta
-# lista explicitamente). En desarrollo local alcanza con estos dos.
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+# lista explicitamente). En desarrollo local alcanza con estos dos; en
+# produccion se agrega el dominio real via variable de entorno.
+ALLOWED_HOSTS = [
+    h.strip()
+    for h in os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+    if h.strip()
+]
+
+# Origenes desde los que Django acepta peticiones POST protegidas por CSRF
+# (debe incluir protocolo). Se necesita cuando la app corre detras de un
+# proxy/tunel HTTPS con un dominio publico, por eso viene de una variable
+# de entorno separada de ALLOWED_HOSTS (que no lleva protocolo).
+CSRF_TRUSTED_ORIGINS = [
+    o.strip()
+    for o in os.getenv("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",")
+    if o.strip()
+]
+
+# El contenedor recibe trafico plano desde el tunel/proxy que ya termino
+# TLS; esta cabecera le dice a Django que la conexion original SI fue
+# HTTPS, para que request.is_secure() y las cookies "secure" funcionen.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Solo se activan con DEBUG=False (produccion): en desarrollo local sin
+# HTTPS estas opciones impedirian usar cookies o cargar la pagina.
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 
 # Application definition
@@ -42,6 +68,10 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    # Sirve los archivos de STATIC_ROOT directamente desde Django/gunicorn,
+    # sin depender de un nginx aparte dentro del contenedor. Va justo
+    # despues de SecurityMiddleware como pide la documentacion de whitenoise.
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -139,6 +169,21 @@ STATICFILES_DIRS = [
 # (no Django) los sirva directamente. En desarrollo (runserver) no se
 # usa: Django sirve los archivos directo desde STATICFILES_DIRS.
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# Compresion + hashing de nombres de archivo para cache-busting, servido
+# por whitenoise (ver MIDDLEWARE mas arriba).
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    # Sin "Manifest": esa variante exige que exista el archivo generado
+    # por "collectstatic" (staticfiles.json) para poder resolver
+    # {% static %}, lo que rompe runserver/tests en desarrollo cuando
+    # todavia no se corrio collectstatic. Esta variante solo comprime.
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
