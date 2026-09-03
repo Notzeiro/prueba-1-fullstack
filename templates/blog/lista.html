@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Blog{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/blogs.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <h1>Noticias Importantes</h1>
+</div>
+
+{% for post in posts %}
+<div class="contenedorBlogs">
+    <div class="contenidoBlog">
+        <h1 class="tituloBlog">{{ post.titulo }}</h1>
+        <p class="descricionBlog">{{ post.descripcion }}</p>
+        <a href="#" class="botonBlog">Ver Caso</a>
+    </div>
+
+    {% if post.imagen_portada %}
+        <img src="{{ post.imagen_portada.url }}" alt="{{ post.titulo }}" class="imagenBlog">
+    {% endif %}
+</div>
+{% empty %}
+<p>Todavía no hay publicaciones en el blog.</p>
+{% endfor %}
+
+{% endblock %}

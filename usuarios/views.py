@@ -1,5 +1,11 @@
-from django.http import HttpResponse
+from django.shortcuts import render
 
 
-def index(request):
-    return HttpResponse("Usuarios funcionando")
+def login_view(request):
+    # TODO: procesar el formulario y autenticar con django.contrib.auth
+    return render(request, "usuarios/login.html")
+
+
+def registro_view(request):
+    # TODO: procesar el formulario y crear el Usuario real
+    return render(request, "usuarios/registro.html")

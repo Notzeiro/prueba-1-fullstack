@@ -1,5 +1,8 @@
-from django.http import HttpResponse
+from django.shortcuts import render
+
+from .models import Blog
 
 
 def index(request):
-    return HttpResponse("Blog funcionando")
+    posts = Blog.objects.filter(activo=True)
+    return render(request, "blog/lista.html", {"posts": posts})
