@@ -36,6 +36,12 @@
             <span class="product-price">{{ producto.artista.nombre_artista }}</span>
             <span class="product-amount">${{ producto.precio }}</span>
         </div>
+        <button class="btn btn-sm btn-outline-primary mt-2 btn-agregar-carrito"
+                data-producto-id="{{ producto.id }}"
+                data-producto-nombre="{{ producto.nombre }}"
+                data-producto-precio="{{ producto.precio }}">
+            Añadir al carrito
+        </button>
     </div>
     {% empty %}
     <p>Todavía no hay productos cargados en la tienda.</p>

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Mi carrito{% endblock %}
+
+{% block content %}
+
+<h1>Mi carrito de compras</h1>
+
+{# Este div esta vacio a proposito: carrito.js lo rellena con JavaScript #}
+{# apenas la pagina carga, leyendo lo que haya guardado en localStorage. #}
+<div id="carrito-contenedor"></div>
+
+<div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+    <h4>Total</h4>
+    <h4 id="carrito-total">$0</h4>
+</div>
+
+<a href="{% url 'productos:index' %}" class="btn btn-outline-secondary mt-3">Seguir comprando</a>
+
+{% endblock %}

@@ -19,3 +19,11 @@ def nosotros(request):
         {"nombre": "Miguel", "rol": "Desarrollo frontend"},
     ]
     return render(request, "core/nosotros.html", {"equipo": equipo})
+
+
+def carrito(request):
+    # Esta vista no consulta la base de datos: el contenido del carrito
+    # vive en localStorage, en el navegador de quien esta comprando.
+    # static/js/carrito.js es el que realmente dibuja los productos
+    # dentro de esta pagina, una vez que el HTML ya cargo.
+    return render(request, "core/carrito.html")
