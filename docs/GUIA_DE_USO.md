@@ -98,16 +98,25 @@ Desde el panel se puede:
 - **Blog → Blogs**: crear/editar publicaciones, incluyendo subir imágenes de galería desde la misma pantalla.
 - **Contacto → Mensajes de contacto**: ver los mensajes enviados desde el formulario público, filtrar por revisados/no revisados, y marcar varios como revisados de una vez seleccionándolos y usando la acción del listado.
 
-## 4. Datos de prueba ya cargados
+## 4. Datos de prueba (comando `seed_demo`)
 
-Al momento de escribir este documento, la base de datos tiene cargados como ejemplo:
+El proyecto trae un comando de Django que puebla la tienda de una sola vez:
 
-- **Productos**: *Walk Among Us* (Misfits) y *Californication* (Red Hot Chili Peppers)
-- **Categorías**: Punk Rock, Funk Rock
-- **Un post de blog**: "Bienvenidos a Vinyl Hub"
-- **Un usuario administrador** (creado con `createsuperuser` — pedile la contraseña a quien lo creó, o creá el tuyo propio en tu base de datos local)
+```bash
+python manage.py seed_demo
+```
 
-Estos datos existen solo en la base de datos de quien los cargó — cada integrante del equipo va a tener que cargar sus propios datos de prueba en su base local (o usar el admin para hacerlo).
+Carga:
+
+- **50 productos** repartidos en **10 categorías** (Rock, Punk Rock, Funk Rock, Metal, Hip-Hop, Jazz, Electrónica, Soul, Reggae, Pop), de 50 artistas distintos — discos reales y conocidos de cada género, para tener variedad real al navegar/filtrar/buscar.
+- **2 posts de blog** básicos ("Cómo cuidar tus discos de vinilo" y "Novedades en Vynil Store").
+- Una **portada generada automáticamente** para cada producto y cada post (no se descarga ninguna imagen de internet: se dibuja con Pillow — fondo de color + título + artista — y se guarda directo en formato **WEBP**, bastante más liviano que un JPG/PNG equivalente). El resultado no son carátulas reales, son portadas simples de relleno, suficientes para probar el flujo completo de la tienda con datos variados.
+
+Es **idempotente**: correrlo de nuevo no duplica nada (busca cada producto/post por nombre antes de crearlo), así que es seguro correrlo tanto en desarrollo local como en el servidor de producción después de cada despliegue nuevo.
+
+Si no existe ningún superusuario todavía, el comando crea uno de emergencia (`admin@vynilstore.local` / `ChangeMe123!`) para poder asignarlo como autor de los posts del blog — cambiá esa contraseña o creá tu propio superusuario con `createsuperuser` antes de correrlo, si te importa cuál queda.
+
+Estos datos viven en la base de datos de cada entorno (local o servidor) — no se comparten por git, cada quien corre el comando en su propia base.
 
 ## 5. Verificar que todo funciona (tests automatizados)
 
