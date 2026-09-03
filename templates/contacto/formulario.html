@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Contáctanos{% endblock %}
+
+{% block content %}
+
+<h1>Contáctanos</h1>
+
+<form method="post" class="col-md-6">
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label for="id_nombre" class="form-label">Nombre</label>
+        {{ form.nombre }}
+        {% if form.nombre.errors %}<div class="text-danger">{{ form.nombre.errors }}</div>{% endif %}
+    </div>
+
+    <div class="mb-3">
+        <label for="id_correo" class="form-label">Correo</label>
+        {{ form.correo }}
+        {% if form.correo.errors %}<div class="text-danger">{{ form.correo.errors }}</div>{% endif %}
+    </div>
+
+    <div class="mb-3">
+        <label for="id_asunto" class="form-label">Asunto</label>
+        {{ form.asunto }}
+        {% if form.asunto.errors %}<div class="text-danger">{{ form.asunto.errors }}</div>{% endif %}
+    </div>
+
+    <div class="mb-3">
+        <label for="id_mensaje" class="form-label">Mensaje</label>
+        {{ form.mensaje }}
+        {% if form.mensaje.errors %}<div class="text-danger">{{ form.mensaje.errors }}</div>{% endif %}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Enviar mensaje</button>
+</form>
+
+{% endblock %}

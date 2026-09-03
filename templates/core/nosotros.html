@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Nosotros{% endblock %}
+
+{% block content %}
+
+<h1>Nosotros</h1>
+
+<p>
+    Vinyl Hub es una tienda online de vinilos, creada como proyecto para el ramo
+    de Desarrollo Fullstack II. Buscamos ofrecer una experiencia simple para
+    encontrar y comprar discos, con un catálogo administrado por nuestro propio
+    equipo.
+</p>
+
+<h2>Equipo</h2>
+
+<div class="row">
+    {% for integrante in equipo %}
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ integrante.nombre }}</h5>
+                <p class="card-text text-secondary">{{ integrante.rol }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
