@@ -43,12 +43,29 @@
                     <ul class="navbar-nav align-items-lg-center">
                         <li class="nav-item">
                             <a class="nav-link" href="#">
-                                🛒 Carrito <span class="badge bg-secondary">0</span>
+                                Carrito <span class="badge bg-secondary" id="contador-carrito">0</span>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'usuarios:login' %}">Iniciar sesión</a>
-                        </li>
+                        {% if user.is_authenticated %}
+                            <li class="nav-item">
+                                <span class="nav-link disabled">Hola, {{ user.first_name|default:user.username }}</span>
+                            </li>
+                            {% if user.is_staff %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'admin:index' %}">Administrador</a>
+                                </li>
+                            {% endif %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'usuarios:logout' %}">Cerrar sesión</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'usuarios:registro' %}">Registro</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'usuarios:login' %}">Iniciar sesión</a>
+                            </li>
+                        {% endif %}
                     </ul>
 
                 </div>
@@ -57,6 +74,15 @@
     </header>
 
     <main class="container my-4">
+        {# El framework de mensajes de Django (django.contrib.messages) junta #}
+        {# los mensajes que las vistas dejan con messages.success(), etc. y #}
+        {# los muestra una sola vez, en la siguiente pagina que se cargue. #}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
         {% block content %}
         {% endblock %}
     </main>

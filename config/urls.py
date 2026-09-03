@@ -14,6 +14,8 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
@@ -25,3 +27,10 @@ urlpatterns = [
     path("blog/", include("blog.urls")),
     path("contacto/", include("contacto.urls")),
 ]
+
+# En desarrollo (DEBUG=True), Django no sirve archivos subidos por los
+# usuarios (imagenes de productos, blog, etc.) a menos que se le indique
+# explicitamente con esta linea. En produccion esto lo hace el servidor
+# web (nginx, etc.), no Django, por eso va condicionado a settings.DEBUG.
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -83,6 +83,15 @@ DATABASES = {
 
 AUTH_USER_MODEL = "usuarios.Usuario"
 
+# Traduce las categorias de mensajes de Django ("error") a las clases
+# de Bootstrap que se usan para pintarlos ("alert-danger"), para que
+# {{ message.tags }} en las plantillas arme la clase CSS correcta.
+from django.contrib.messages import constants as messages_constants
+
+MESSAGE_TAGS = {
+    messages_constants.ERROR: "danger",
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/6.1/ref/settings/#auth-password-validators
