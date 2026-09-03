@@ -1,10 +1,10 @@
-from django.http import HttpResponse
+from django.shortcuts import render
 
 
 def index(request):
-    return HttpResponse("Productos funcionando")
+    return render(request, "productos/lista.html")
 
 
 def detalle(request, pk):
     # TODO: reemplazar por la consulta real: Producto.objects.get(pk=pk)
-    return HttpResponse(f"Detalle del producto {pk} (pendiente de conectar a la base de datos)")
+    return render(request, "productos/detalle.html")

@@ -1,44 +1,328 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Productos{% endblock %}
+{% block title %}Vinyl Cool - Tienda Online{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/productos.css' %}">
+<style>
+/*===================== CONTROL DE COLORES (PALETA VINYL COOL) ===========================*/
+:root {
+    --bg-page: #F3EFE0;                   /* Crema Vintage general */
+    --product-card-color: #FFFFFF;        /* Blanco para destacar carátulas */
+    --product-card-border: #E8A246;       /* Amarillo Mostaza para bordes suaves */
+    --product-name-color: #0E3A53;        /* Azul Marino Clásico */
+    --product-price-color: #555555;       /* Gris neutro */
+    --product-amount-color: #E36236;      /* Naranja Terracota */
+    --product-image-background: #0E3A53;  /* Azul Marino */
+    --text-primary: #1A1A1A;              /* Negro Vinilo */
+    --button-bg: #E36236;                 /* Naranja Terracota */
+    --button-text: #FFFFFF;               /* Blanco */
+    --button-hover: #E8A246;              /* Amarillo Mostaza */
+}
+
+body {
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* =========== CONTENEDOR GENERAL DE PRODUCTOS ================ */
+.products-container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), max(calc(25% - 20px), 250px)));
+    gap: 20px;
+    padding: 20px;
+    box-sizing: border-box;
+    justify-self: center;
+}
+
+/* ======== CONTAINER / TARJETA DEL PRODUCTO ======= */
+.product-card {
+    width: 100%;
+    max-width: 300px;
+    background-color: var(--product-card-color);
+    padding: 12px;
+    box-sizing: border-box;
+    border-radius: 8px;
+    border: 1px solid var(--product-card-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    justify-self: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 12px rgba(0,0,0,0.1);
+}
+
+/* ============= IMAGEN DEL PRODUCTO =============== */
+.product-image {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    background-color: var(--product-image-background);
+    overflow: hidden;
+    border-radius: 4px;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* ================== NOMBRE DEL PRODUCTO ================= */
+.product-name {
+    display: block;
+    margin: 12px 0 8px 0;
+    text-align: center;
+    color: var(--product-name-color);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.product-name:hover {
+    color: var(--product-amount-color);
+    text-decoration: underline;
+}
+
+/* ============== INFORMACIÓN DEL PRODUCTO ============== */
+.product-info {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto;
+}
+
+/* ======================= PRECIO ======================= */
+.product-price {
+    color: var(--product-price-color);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ====================== MONTO / CANTIDAD =============== */
+.product-amount {
+    color: var(--product-amount-color);
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+/* ================== BANNER HÉROE ================= */
+.hero-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #FFFFFF;
+    border: 2px solid var(--product-name-color);
+    padding: 40px;
+    gap: 30px;
+    margin: 20px;
+    border-radius: 8px;
+    box-sizing: border-box;
+    box-shadow: 4px 4px 0px var(--product-name-color);
+}
+
+.hero-content {
+    flex: 1;
+    max-width: 500px;
+}
+
+.hero-content h1 {
+    font-size: 2.2rem;
+    color: var(--product-name-color);
+    margin: 0 0 15px 0;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.hero-content p {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    line-height: 1.5;
+    margin-bottom: 25px;
+}
+
+/* Botón interactivo */
+.hero-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border-radius: 4px;
+    border: 2px solid var(--text-primary);
+    box-shadow: 3px 3px 0px var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+.hero-button:hover {
+    background-color: var(--button-hover);
+    color: var(--text-primary);
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0px var(--text-primary);
+}
+
+/* Imagen del banner */
+.hero-image {
+    flex: 1;
+    max-width: 50%;
+    aspect-ratio: 16 / 9;
+    border: 2px solid var(--text-primary);
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: var(--product-image-background);
+}
+
+.hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* =============== RESPONSIVE ============= */
+@media (max-width: 768px) {
+    .hero-banner {
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .hero-content,
+    .hero-image {
+        max-width: 100%;
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .products-container {
+        grid-template-columns: 1fr;
+        padding: 15px;
+        gap: 15px;
+    }
+
+    .product-card {
+        max-width: 100%;
+    }
+}
+</style>
 {% endblock %}
 
 {% block content %}
 
-<section class="hero-banner">
-    <div class="hero-content">
-        <h1>Tienda Online</h1>
-        <p>Vinilos originales, ediciones limitadas y clásicos del rock, metal y más — directo a tu colección.</p>
-        <a href="#productos" class="hero-button">Ver productos</a>
-    </div>
-    <div class="hero-image">
-        <img src="{% static 'img/logoHero.jpg' %}" alt="Vinyl Hub">
-    </div>
-</section>
+    <section class="hero-banner">
+        <div class="hero-content">
+            <h1>TIENDA ONLINE</h1>
+            <p>Our North American Field Guides provide tips for identifying birds in all of the regions of the United States and Canada. Download any of our guides for free now!</p>
+            <a href="#" class="hero-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                </svg>
+                ver productos
+            </a>
+        </div>
+        <div class="hero-image">
+            <img src="{% static 'img/logoHero.jpg' %}" alt="Promoción principal">
+        </div>
+    </section>
 
-<div class="products-container" id="productos">
-    {% for producto in productos %}
-    <div class="product-card">
-        <div class="product-image">
-            {% if producto.imagen %}
-                <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
-            {% else %}
-                <img src="{% static 'img/DiscoNoEncontrado.jpg' %}" alt="{{ producto.nombre }}">
-            {% endif %}
+    <div class="products-container">
+
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{% static 'img/DiscoNoEncontrado.jpg' %}" alt="producto 1">
+            </div>
+            <a href="detalle-producto.html?id=1" class="product-name">clever impersonator</a>
+            <div class="product-info">
+                <span class="product-price">precio</span>
+                <span class="product-amount">$1,234</span>
+            </div>
         </div>
-        <a href="{% url 'productos:detalle' producto.id %}" class="product-name">{{ producto.nombre }}</a>
-        <div class="product-info">
-            <span class="product-price">{{ producto.artista.nombre_artista }}</span>
-            <span class="product-amount">${{ producto.precio }}</span>
+
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{% static 'img/DiscoNoEncontrado.jpg' %}" alt="producto 2">
+            </div>
+            <a href="detalle-producto.html?id=2" class="product-name">clever impersonator</a>
+            <div class="product-info">
+                <span class="product-price">precio</span>
+                <span class="product-amount">$1,234</span>
+            </div>
         </div>
+
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{% static 'img/DiscoNoEncontrado.jpg' %}" alt="producto 3">
+            </div>
+            <a href="detalle-producto.html?id=3" class="product-name">clever impersonator</a>
+            <div class="product-info">
+                <span class="product-price">precio</span>
+                <span class="product-amount">$1,234</span>
+            </div>
+        </div>
+
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{% static 'img/DiscoNoEncontrado.jpg' %}" alt="producto 4">
+            </div>
+            <a href="detalle-producto.html?id=4" class="product-name">clever impersonator</a>
+            <div class="product-info">
+                <span class="product-price">precio</span>
+                <span class="product-amount">$1,234</span>
+            </div>
+        </div>
+
+                <div class="product-card">
+            <div class="product-image">
+                <img src="{% static 'img/DiscoNoEncontrado.jpg' %}" alt="producto 4">
+            </div>
+            <a href="detalle-producto.html?id=4" class="product-name">clever impersonator</a>
+            <div class="product-info">
+                <span class="product-price">precio</span>
+                <span class="product-amount">$1,234</span>
+            </div>
+        </div>
+
+                <div class="product-card">
+            <div class="product-image">
+                <img src="{% static 'img/DiscoNoEncontrado.jpg' %}" alt="producto 4">
+            </div>
+            <a href="detalle-producto.html?id=4" class="product-name">clever impersonator</a>
+            <div class="product-info">
+                <span class="product-price">precio</span>
+                <span class="product-amount">$1,234</span>
+            </div>
+        </div>
+
+                <div class="product-card">
+            <div class="product-image">
+                <img src="{% static 'img/DiscoNoEncontrado.jpg' %}" alt="producto 4">
+            </div>
+            <a href="detalle-producto.html?id=4" class="product-name">clever impersonator</a>
+            <div class="product-info">
+                <span class="product-price">precio</span>
+                <span class="product-amount">$1,234</span>
+            </div>
+        </div>
+
     </div>
-    {% empty %}
-    <p>Todavía no hay productos cargados.</p>
-    {% endfor %}
-</div>
 
 {% endblock %}
