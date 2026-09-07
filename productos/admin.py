@@ -27,7 +27,7 @@ class CategoriaAdmin(admin.ModelAdmin):
 
 @admin.register(Producto)
 class ProductoAdmin(admin.ModelAdmin):
-    list_display = ("nombre", "artista", "categoria", "precio", "stock", "activo")
+    list_display = ("nombre", "artista", "categoria", "precio", "stock", "activo", "rc")
     # Filtros rápidos a la derecha del listado.
     list_filter = ("activo", "categoria", "artista")
     search_fields = ("nombre", "artista__nombre_artista")

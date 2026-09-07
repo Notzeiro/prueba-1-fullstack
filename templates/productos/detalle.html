@@ -89,6 +89,22 @@
 .product-meta p { margin: 6px 0; }
 .product-meta strong { color: var(--navy-blue); }
 
+/* TRACKLIST Y CRÉDITOS (Discogs) */
+.tracklist-container { padding-left: 5px; }
+.track-link {
+    font-size: 0.95rem;
+    color: var(--navy-blue);
+    text-decoration: none;
+    line-height: 1.4;
+    margin: 6px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+}
+.track-link::before { content: "▶"; font-size: 0.7rem; color: var(--terracotta); }
+.texto1 p { font-size: 0.95rem; line-height: 1.5; margin: 4px 0; }
+
 .quantity-container { display: flex; align-items: center; gap: 15px; margin: 20px 0; font-weight: bold; color: var(--navy-blue); }
 .quantity-select { padding: 8px 12px; font-size: 1rem; border: 2px solid var(--border-color); border-radius: 4px; background-color: var(--bg-page); font-weight: bold; }
 
@@ -160,15 +176,17 @@
 
     <!-- GALERÍA / CARRUSEL: "urls_galeria" lo arma la vista (productos/views.py):
          portada + fotos de ImagenProducto, o el dibujo de "no encontrado" si
-         el producto no tiene ninguna imagen. Todas las urls vienen ya
-         resueltas desde el servidor, no se piden a ninguna API externa. -->
+         el producto no tiene ninguna imagen. Estas urls vienen resueltas
+         desde el servidor y se muestran de entrada (funcionan aunque el
+         producto no tenga RC, o Discogs no responda). Si el producto SI
+         tiene RC y Discogs devuelve imagenes, el script de mas abajo
+         reemplaza el contenido de "thumbnailsContainer" por las de Discogs. -->
     <div class="gallery-container">
         <div class="main-image">
             <img id="imagenPrincipal" src="{{ urls_galeria.0 }}" alt="{{ producto.nombre }}">
         </div>
 
-        {% if urls_galeria|length > 1 %}
-        <div class="thumbnails-container">
+        <div class="thumbnails-container" id="thumbnailsContainer"{% if urls_galeria|length <= 1 %} hidden{% endif %}>
             {% for url in urls_galeria %}
             <img src="{{ url }}"
                  class="thumb{% if forloop.first %} active{% endif %}"
@@ -176,7 +194,6 @@
                  onclick="cambiarImagenPrincipal(this)">
             {% endfor %}
         </div>
-        {% endif %}
     </div>
 
     <div class="product-info-detail">
@@ -217,6 +234,37 @@
     <p>{{ producto.artista.descripcion_artista }}</p>
 </section>
 {% endif %}
+
+<!-- Las 3 secciones de abajo dependen de la API de Discogs (usando el RC
+     del producto), no de nuestra base de datos: empiezan ocultas
+     ("hidden") y el script las va a mostrar solo si Discogs devuelve
+     datos para llenarlas. Si el producto no tiene RC, o Discogs no
+     responde, o el release no trae esa info, simplemente quedan ocultas
+     -- la pagina nunca se rompe ni muestra secciones vacias. -->
+<section class="shelf-section" id="seccionTracklist" hidden>
+    <h2 class="shelf-title">Tracklist</h2>
+    <div class="tracklist-container" id="tracklist"></div>
+</section>
+
+<section class="shelf-section" id="seccionEdicion" hidden>
+    <h2 class="shelf-title">Detalles de la edición (Discogs)</h2>
+    <div class="product-meta">
+        <div id="releaseCode"></div>
+        <div id="numeroCatalogo"></div>
+        <div id="anioEdicion"></div>
+        <div id="paisEdicion"></div>
+        <div id="sello"></div>
+        <div id="genero"></div>
+        <div id="estilo"></div>
+        <div id="distribuidora"></div>
+        <div id="recordCompany"></div>
+    </div>
+</section>
+
+<section class="shelf-section" id="seccionCreditos" hidden>
+    <h2 class="shelf-title">Créditos</h2>
+    <div class="texto1" id="creditos"></div>
+</section>
 
 {% if relacionados %}
 <section class="shelf-section">
@@ -269,6 +317,121 @@ function cambiarImagenPrincipal(elemento) {
     });
     elemento.classList.add('active');
 }
+
+// ---- Discogs (opcional, complementa -no reemplaza- los datos locales) ----
+//
+// El RC (Release ID de Discogs) de ESTE producto viene del propio Django,
+// no esta hardcodeado: "producto.rc" es el campo que se cargo en la base
+// de datos (ver productos/models.py y el comando cargar_rc_discogs). Si
+// el producto no tiene RC, "RC_PRODUCTO" queda vacio y nunca se llama a
+// fetch(): la pagina sigue mostrando igual todo lo que ya vino del
+// servidor (nombre, precio, stock, imagenes locales, etc.), que es la
+// info que manda nuestro propio sistema.
+const RC_PRODUCTO = "{{ producto.rc|default_if_none:'' }}";
+
+function mostrarSeccion(idSeccion) {
+    const seccion = document.getElementById(idSeccion);
+    if (seccion) seccion.hidden = false;
+}
+
+async function cargarDatosDiscogs() {
+    if (!RC_PRODUCTO) {
+        return; // Este producto no tiene RC: no hay nada que consultar.
+    }
+
+    try {
+        const res = await fetch(`https://api.discogs.com/releases/${RC_PRODUCTO}`);
+        if (!res.ok) {
+            // Discogs respondio pero con error (404 = release inexistente,
+            // 429 = limite de peticiones, etc.): no seguimos, la pagina se
+            // queda tal cual estaba con los datos locales.
+            console.warn('Discogs respondio', res.status, 'para RC', RC_PRODUCTO);
+            return;
+        }
+        const data = await res.json();
+
+        // --- Galeria: reemplaza las miniaturas locales por las de Discogs
+        // solo si el release realmente trae imagenes ---
+        const imagenes = Array.isArray(data.images) ? data.images : [];
+        if (imagenes.length > 0) {
+            const contenedorMiniaturas = document.getElementById('thumbnailsContainer');
+            const imagenPrincipal = document.getElementById('imagenPrincipal');
+
+            contenedorMiniaturas.innerHTML = '';
+            imagenes.forEach(function (img, indice) {
+                const ruta = img.uri || "{% static 'img/DiscoNoEncontrado.jpg' %}";
+                const miniatura = document.createElement('img');
+                miniatura.src = ruta;
+                miniatura.alt = '{{ producto.nombre|escapejs }} - vista ' + (indice + 1);
+                miniatura.className = 'thumb' + (indice === 0 ? ' active' : '');
+                miniatura.onclick = function () { cambiarImagenPrincipal(miniatura); };
+                contenedorMiniaturas.appendChild(miniatura);
+            });
+            contenedorMiniaturas.hidden = imagenes.length <= 1;
+            imagenPrincipal.src = imagenes[0].uri || "{% static 'img/DiscoNoEncontrado.jpg' %}";
+        }
+
+        // --- Tracklist ---
+        const tracklist = Array.isArray(data.tracklist) ? data.tracklist : [];
+        if (tracklist.length > 0) {
+            const contenedorTracklist = document.getElementById('tracklist');
+            tracklist.forEach(function (cancion) {
+                const posicion = cancion.position || '';
+                const titulo = cancion.title || 'Sin título';
+                const duracion = cancion.duration || '';
+                const linea = document.createElement('a');
+                linea.className = 'track-link';
+                linea.textContent = [posicion, titulo, duracion].filter(Boolean).join(' — ');
+                contenedorTracklist.appendChild(linea);
+            });
+            mostrarSeccion('seccionTracklist');
+        }
+
+        // --- Detalles de la edición ---
+        const primerSello = (Array.isArray(data.labels) && data.labels.length > 0) ? data.labels[0] : null;
+
+        document.getElementById('releaseCode').innerHTML =
+            `<p><strong>Release Code:</strong> ${data.id || 'N/A'}</p>`;
+        document.getElementById('numeroCatalogo').innerHTML =
+            `<p><strong>Número de catálogo:</strong> ${primerSello?.catno || 'N/A'}</p>`;
+        document.getElementById('anioEdicion').innerHTML =
+            `<p><strong>Año:</strong> ${data.year || 'N/A'}</p>`;
+        document.getElementById('paisEdicion').innerHTML =
+            `<p><strong>País:</strong> ${data.country || 'N/A'}</p>`;
+        document.getElementById('sello').innerHTML =
+            `<p><strong>Sello:</strong> ${primerSello?.name || 'N/A'}</p>`;
+        document.getElementById('genero').innerHTML =
+            `<p><strong>Género:</strong> ${(Array.isArray(data.genres) && data.genres.length) ? data.genres.join(', ') : 'N/A'}</p>`;
+        document.getElementById('estilo').innerHTML =
+            `<p><strong>Estilo:</strong> ${(Array.isArray(data.styles) && data.styles.length) ? data.styles.join(', ') : 'N/A'}</p>`;
+        document.getElementById('distribuidora').innerHTML =
+            `<p><strong>Distribuidora:</strong> ${primerSello?.name || 'N/A'}</p>`;
+        document.getElementById('recordCompany').innerHTML =
+            `<p><strong>Record Company:</strong> ${primerSello?.name || 'N/A'}</p>`;
+        mostrarSeccion('seccionEdicion');
+
+        // --- Créditos ---
+        const creditos = Array.isArray(data.extraartists) ? data.extraartists : [];
+        if (creditos.length > 0) {
+            const contenedorCreditos = document.getElementById('creditos');
+            creditos.forEach(function (artista) {
+                if (!artista.name) return;
+                const linea = document.createElement('p');
+                linea.textContent = artista.name + (artista.role ? ' — ' + artista.role : '');
+                contenedorCreditos.appendChild(linea);
+            });
+            mostrarSeccion('seccionCreditos');
+        }
+
+    } catch (error) {
+        // Discogs no respondio (sin internet, CORS, timeout, etc.): no se
+        // rompe la pagina, solo se queda con los datos locales que ya
+        // habia mandado Django.
+        console.error('No se pudo cargar la info de Discogs:', error);
+    }
+}
+
+cargarDatosDiscogs();
 </script>
 
 {% endblock %}

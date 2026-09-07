@@ -9,6 +9,7 @@ class Artista(models.Model):
     # porque Django ya guarda "vacio" como cadena vacia, no como NULL.
     pais = models.CharField(max_length=100, blank=True)
     descripcion_artista = models.TextField(blank=True)
+  
 
     class Meta:
         verbose_name_plural = "Artistas"
@@ -73,6 +74,13 @@ class Producto(models.Model):
 
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
+
+    # RC = Release Code/ID de Discogs (https://api.discogs.com/releases/<rc>),
+    # usado en el detalle del producto para traer imagenes/tracklist/creditos
+    # desde Discogs. null=True, blank=True porque no todos los productos van
+    # a tener un release de Discogs asociado (a diferencia de precio/stock,
+    # que si son obligatorios).
+    rc = models.PositiveIntegerField(null=True, blank=True, verbose_name="RC (Discogs)")
 
     class Meta:
         verbose_name = "Vinilo"
