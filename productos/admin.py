@@ -1,6 +1,14 @@
 from django.contrib import admin
 
-from .models import Artista, Categoria, Producto
+from .models import Artista, Categoria, ImagenProducto, Producto
+
+
+# TabularInline muestra las fotos de galeria de un producto dentro de la
+# misma pantalla de edicion del producto, en vez de tener que crearlas
+# por separado. Mismo patron que ImagenBlogInline en blog/admin.py.
+class ImagenProductoInline(admin.TabularInline):
+    model = ImagenProducto
+    extra = 1  # cuántas filas vacías extra mostrar para cargar fotos nuevas
 
 
 @admin.register(Artista)
@@ -26,3 +34,4 @@ class ProductoAdmin(admin.ModelAdmin):
     # Permite editar "activo" directamente desde la lista, sin entrar
     # al detalle del producto (útil para desactivar productos rápido).
     list_editable = ("activo",)
+    inlines = [ImagenProductoInline]

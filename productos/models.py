@@ -60,7 +60,11 @@ class Producto(models.Model):
     # ImageField guarda la imagen en la carpeta media/img/ (definida por
     # MEDIA_ROOT en settings.py) y en la base de datos solo se guarda la
     # ruta del archivo, no la imagen en si.
-    imagen = models.ImageField(upload_to='img/')
+    # blank=True, null=True: la portada es opcional. Sin esto, el admin
+    # y la base de datos exigirian siempre una imagen, y el "if producto.imagen"
+    # de las plantillas (que muestra DiscoNoEncontrado.jpg como reemplazo)
+    # nunca se activaria porque nunca podria existir un producto sin imagen.
+    imagen = models.ImageField(upload_to='img/', blank=True, null=True)
 
     # Permite "desactivar" un producto (dejar de mostrarlo en la tienda)
     # sin borrarlo de la base de datos. Es la practica recomendada frente
@@ -75,3 +79,27 @@ class Producto(models.Model):
 
     def __str__(self):
         return self.nombre
+
+
+class ImagenProducto(models.Model):
+    # Permite que un mismo producto tenga varias fotos de galeria ademas
+    # de la portada (imagen) de arriba. related_name='imagenes' es lo que
+    # permite escribir despues "un_producto.imagenes.all()" para traer
+    # todas las fotos extra asociadas a ese producto (usadas en el
+    # carrusel del detalle). Mismo patron que ImagenBlog en blog/models.py.
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE, related_name='imagenes')
+
+    imagen = models.ImageField(upload_to='img/productos/galeria/')
+
+    # Permite controlar en que orden se muestran las fotos en el
+    # carrusel (0 primero, 1 despues, etc.), en vez de mostrarlas en el
+    # orden en que se cargaron.
+    orden = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['orden']
+        verbose_name = "Imagen de producto"
+        verbose_name_plural = "Imágenes de producto"
+
+    def __str__(self):
+        return f"Imagen de {self.producto.nombre}"
