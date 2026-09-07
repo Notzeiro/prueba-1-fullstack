@@ -15,9 +15,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf import settings
-from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
+from django.views.static import serve as serve_media
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -34,4 +34,15 @@ urlpatterns = [
 # web aparte (nginx, etc.), pero este despliegue es un contenedor unico
 # sin sidecar de estaticos, asi que se sirve siempre, tambien con
 # DEBUG=False. Para el volumen de trafico de este proyecto es aceptable.
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+#
+# OJO: el helper "de manual" django.conf.urls.static.static() NO sirve
+# para esto -- por dentro, esa funcion se auto-desactiva (devuelve una
+# lista vacia de rutas) cuando DEBUG=False, sin importar como se la
+# llame. Con eso, en produccion (DEBUG=False) nunca se agregaba ninguna
+# ruta para /media/ y cualquier imagen subida daba 404, aunque el
+# archivo si existiera en el volumen. Por eso aca se arma la ruta a
+# mano con re_path() + la vista serve() de Django, que si funciona sin
+# DEBUG.
+urlpatterns += [
+    re_path(r"^media/(?P<path>.*)$", serve_media, {"document_root": settings.MEDIA_ROOT}),
+]
