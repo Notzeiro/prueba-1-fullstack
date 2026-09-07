@@ -1,0 +1,28 @@
+/* Layout global del sitio (base.html): asegura que el footer quede
+   siempre pegado abajo del todo de la pantalla, incluso en paginas con
+   poco contenido (por ejemplo, un detalle de producto corto, o una
+   pagina vacia). Sin esto, el footer aparece "flotando" justo despues
+   del contenido en vez de quedar al fondo de la ventana.
+
+   Como funciona: el body se vuelve un contenedor flex vertical de al
+   menos el alto de la ventana (min-height: 100vh); "main" (el bloque de
+   contenido, ver base.html) crece para ocupar todo el espacio sobrante
+   (flex: 1 0 auto), empujando al footer hacia abajo; el footer no se
+   encoge (flex-shrink: 0), asi que siempre se ve completo. */
+html {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+footer {
+    flex-shrink: 0;
+}
